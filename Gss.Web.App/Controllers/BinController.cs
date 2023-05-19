@@ -56,9 +56,9 @@ public class BinController : ControllerBase
     [HttpGet("{binId}")]
     [ProducesResponseType(typeof(BinDetailsModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IStatusCodeActionResult GetBin(int binId)
+    public async Task<IStatusCodeActionResult> GetBin(int binId)
     {
-        var bin = _binService.GetBin(binId);
+        var bin = await _binService.GetBin(binId);
         return bin != null
             ? Ok(_mapper.Map<BinDetailsModel>(bin))
             : NotFound();
@@ -77,9 +77,9 @@ public class BinController : ControllerBase
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(BinDetailsModel), StatusCodes.Status409Conflict)]
-    public IStatusCodeActionResult GetQuantityInBin(int binId, int itemId)
+    public async Task<IStatusCodeActionResult> GetQuantityInBin(int binId, int itemId)
     {
-        var bin = _binService.GetBin(binId);
+        var bin = await _binService.GetBin(binId);
         return bin != null
             ? bin.Items.TryGetValue(itemId, out var quantity)
                 ? Ok(quantity)
@@ -98,7 +98,7 @@ public class BinController : ControllerBase
     [HttpPost("{binId}/item/{itemId}")]
     [ProducesResponseType(typeof(BinDetailsModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IStatusCodeActionResult AddToBin(int binId, int itemId)
+    public async Task<IStatusCodeActionResult> AddToBin(int binId, int itemId)
     {
         // TODO: does this need to validate the item ID is for an item that exists?
         // should this method include a quantity? if not, is a default of 0 or 1 more appropriate?
@@ -107,7 +107,7 @@ public class BinController : ControllerBase
         return CreatedAtAction(
             nameof(GetQuantityInBin),
             new { binId = binId, itemId = itemId, },
-            _mapper.Map<BinDetailsModel>(_binService.AddItem(binId, itemId)));
+            _mapper.Map<BinDetailsModel>(await _binService.AddItem(binId, itemId)));
     }
 
     /// <summary>
@@ -126,9 +126,9 @@ public class BinController : ControllerBase
     [ProducesResponseType(typeof(BinDetailsModel),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(BinDetailsModel), StatusCodes.Status409Conflict)]
-    public IStatusCodeActionResult AdjustQuantityInBin(int binId, int itemId, int quantity)
+    public async Task<IStatusCodeActionResult> AdjustQuantityInBin(int binId, int itemId, int quantity)
     {
-        var bin = _binService.GetBin(binId);
+        var bin = await _binService.GetBin(binId);
         if (bin != null)
         {
             return bin.Items.TryGetValue(itemId, out var currentQuantity)
@@ -154,9 +154,9 @@ public class BinController : ControllerBase
     [HttpDelete("{binId}/item/{itemId}")]
     [ProducesResponseType(typeof(BinDetailsModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IStatusCodeActionResult RemoveFromBin(int binId, int itemId)
+    public async Task<IStatusCodeActionResult> RemoveFromBin(int binId, int itemId)
     {
-        var bin = _binService.RemoveItem(binId, itemId);
+        var bin = await _binService.RemoveItem(binId, itemId);
         return bin != null
             ? Ok(_mapper.Map<BinDetailsModel>(bin))
             : NotFound();

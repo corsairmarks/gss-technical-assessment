@@ -55,9 +55,9 @@ public class ItemController : ControllerBase
     [HttpGet("{itemId}")]
     [ProducesResponseType(typeof(ItemDetailsModel), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IStatusCodeActionResult Get(int itemId)
+    public async Task<IStatusCodeActionResult> Get(int itemId)
     {
-        var item = _itemService.Get(itemId);
+        var item = await _itemService.Get(itemId);
         return item != null
             ? Ok(_mapper.Map<ItemDetailsModel>(item))
             : NotFound();
@@ -73,12 +73,12 @@ public class ItemController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ItemDetailsModel), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IStatusCodeActionResult Create(ItemDetailsModel item)
+    public async Task<IStatusCodeActionResult> Create(ItemDetailsModel item)
     {
         // TODO: other validation on the item, possibly leverage model validation
         if (ModelState.IsValid)
         {
-            var (itemId, createdItem) = _itemService.Create(_mapper.Map<ItemModel>(item));
+            var (itemId, createdItem) = await _itemService.Create(_mapper.Map<ItemModel>(item));
             return CreatedAtAction(nameof(Get), new { itemId = itemId, }, createdItem!);
         }
         else
@@ -100,12 +100,12 @@ public class ItemController : ControllerBase
     [ProducesResponseType(typeof(ItemDetailsModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IStatusCodeActionResult Update(int itemId, ItemDetailsModel item)
+    public async Task<IStatusCodeActionResult> Update(int itemId, ItemDetailsModel item)
     {
         // TODO: other validation on the item, possibly leverage model validation
         if (ModelState.IsValid)
         {
-            var updatedItem = _itemService.Update(itemId, _mapper.Map<ItemModel>(item));
+            var updatedItem = await _itemService.Update(itemId, _mapper.Map<ItemModel>(item));
             return item != null
                 ? Ok(_mapper.Map<ItemDetailsModel>(updatedItem))
                 : NotFound();
@@ -126,9 +126,9 @@ public class ItemController : ControllerBase
     [HttpDelete("{itemId}")]
     [ProducesResponseType(typeof(ItemDetailsModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IStatusCodeActionResult Delete(int itemId)
+    public async Task<IStatusCodeActionResult> Delete(int itemId)
     {
-        var item = _itemService.Delete(itemId);
+        var item = await _itemService.Delete(itemId);
         return item != null
             ? Ok(_mapper.Map<ItemDetailsModel>(item))
             : NotFound();

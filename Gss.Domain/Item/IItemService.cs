@@ -17,7 +17,7 @@ public interface IItemService
     /// </summary>
     /// <param name="itemId">The item to update with new data from <paramref name="item"/>.</param>
     /// <param name="item">The new data for <paramref name="itemId"/>.</param>
-    /// <returns>The updated item if it exists; otherwise, <see langword="null"/>.</returns>
+    /// <returns>The updated item if it existed; otherwise, <see langword="null"/>.</returns>
     Task<ItemModel> Update(int itemId, ItemModel item);
 
     /// <summary>
@@ -31,7 +31,7 @@ public interface IItemService
     /// Deletes the specified <paramref name="itemId"/> from the system.
     /// </summary>
     /// <param name="itemId">The item to delete.</param>
-    /// <returns>The item if it existed; otherwise, <see langword="null"/>.</returns>
+    /// <returns>The deleted item if it existed; otherwise, <see langword="null"/>.</returns>
     // note: what is the expected behavior if an item is attempted to be removed but it still is in one or more bins?
     Task<ItemModel> Delete(int itemId);
 }
